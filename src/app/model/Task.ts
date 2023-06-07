@@ -1,18 +1,19 @@
 import {Priority} from "./Priority";
 import {Category} from "./Category";
+import {CompleteType} from "./CompleteType";
 
 export class Task {
   id: number;
   title: string;
-  completed: boolean;
+  completeType: CompleteType;
+  date?: Date;
   priority?: Priority;
   category?: Category;
-  date?: Date;
 
-  constructor(id: number, title: string, completed: boolean, priority?: Priority, category?: Category, date?: Date) {
+  constructor(id: number, title: string, completeType: CompleteType, priority?: Priority, category?: Category, date?: Date) {
     this.id = id;
     this.title = title;
-    this.completed = completed;
+    this.completeType = completeType;
     this.priority = priority;
     this.category = category;
     this.date = date;
