@@ -1,0 +1,10 @@
+.header-icon {
+  cursor: pointer;
+  margin-right: 20px;
+  border: none;
+  outline: none;
+}
+
+.settings button {
+  margin-right: 0;
+}

@@ -1,0 +1,30 @@
+<footer class="footer">
+  <div class="container-fluid">
+    <nav
+      [class.float-left]="!isMobile()"
+      [class.float-center]="isMobile()"
+    >
+      <ul>
+        <li>
+          <a
+            (click)="openAboutDialog()" class="link">
+            О приложении
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com/valchukav" target="_blank">
+            Git
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="copyright"
+         [class.float-right]="!isMobile()"
+         [class.float-center]="isMobile()"
+    >
+      &copy;
+      {{year}}, made with <i class="material-icons">favorite</i> by
+      <a href="https://github.com/valchukav" target="_blank">Alexei Valchuk</a>
+    </div>
+  </div>
+</footer>

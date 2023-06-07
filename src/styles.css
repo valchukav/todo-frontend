@@ -1,0 +1,111 @@
+/* You can add global styles to this file, and also import other style files */
+@import "assets/css/material-dashboard.css";
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+@import "~bootstrap-css-only/css/bootstrap.min.css";
+@import "~intro.js/minified/introjs.min.css";
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif !important;
+}
+
+.not-found {
+  margin-top: 30px;
+  font-size: 20px;
+  color: rgba(74, 74, 74, 0.98);
+  text-align: center;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.clear-input, .mat-mdc-icon-button {
+  font-size: 25px !important;
+  border: none !important;
+  outline: none !important;
+}
+
+mat-dialog-content {
+  padding: 40px !important;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.red {
+  color: red;
+}
+
+.line {
+  border-bottom: 1px solid #dadada;
+  padding-top: 20px;
+}
+
+.gray {
+  color: #8f8f8f !important;
+}
+
+.add-edit-div {
+  padding-bottom: 2%;
+}
+
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.main-panel > .content {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+app-header {
+  width: 100%;
+}
+
+.dialog-title {
+  padding-left: 0 !important;
+  padding-bottom: 15px !important;
+}
+
+.customTooltip {
+  text-align: center !important;
+  min-width: 400px !important;
+}
+
+.navbar {
+  display: contents !important;
+}
+
+.navbar-brand {
+  vertical-align: middle !important;
+}
+
+.sidebar {
+  position: unset !important;
+}
+
+.mat-sidenav {
+  position: fixed !important;
+}
+
+.mat-drawer:not(.mat-drawer-side) {
+  position: fixed;
+}
+
+.mat-drawer-backdrop {
+  position: fixed !important;
+}
+
+.mat-mdc-form-field-icon-suffix {
+  inline-size: inherit;
+  text-align: right;
+  max-width: 50%;
+}
+
