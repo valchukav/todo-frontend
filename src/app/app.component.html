@@ -5,20 +5,20 @@
                (closed)="onCloseMenu()"
   >
     <div class="sidebar" id="root-categories" data-color="purple">
-      <app-categories
-        [categories]="categories"
+<!--      <app-categories-->
+<!--        [categories]="categories"-->
 
-        [selectedCategory]="selectedCategory"
-        [categoryMap]="categoryMap"
-        [uncompletedTotal]="uncompletedTotalTasksCount"
+<!--        [selectedCategory]="selectedCategory"-->
+<!--        [categoryMap]="categoryMap"-->
+<!--        [uncompletedTotal]="uncompletedTotalTasksCount"-->
 
-        (selectCategory)="onSelectCategory($event)"
-        (deleteCategory)="onDeleteCategory($event)"
-        (addCategory)="onAddCategory($event)"
-        (updateCategory)="onUpdateCategory($event)"
-        (searchCategory)="onSearchCategory($event)"
-      >
-      </app-categories>
+<!--        (selectCategory)="onSelectCategory($event)"-->
+<!--        (deleteCategory)="onDeleteCategory($event)"-->
+<!--        (addCategory)="onAddCategory($event)"-->
+<!--        (updateCategory)="onUpdateCategory($event)"-->
+<!--        (searchCategory)="onSearchCategory($event)"-->
+<!--      >-->
+<!--      </app-categories>-->
     </div>
   </mat-sidenav>
 
@@ -27,45 +27,45 @@
 
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
 
-        <app-header
-          [categoryName]="selectedCategory? selectedCategory.title : 'Все'"
-          (toggleStat)="toggleStat($event)"
-          (toggleMenu)="toggleMenu()"
-          [showStat]="showStat"
-        ></app-header>
+<!--        <app-header-->
+<!--          [categoryName]="selectedCategory? selectedCategory.title : 'Все'"-->
+<!--          (toggleStat)="toggleStat($event)"-->
+<!--          (toggleMenu)="toggleMenu()"-->
+<!--          [showStat]="showStat"-->
+<!--        ></app-header>-->
 
       </nav>
 
       <div class="content">
         <div class="container-fluid" id="stats-and-tasks">
 
-          <app-stat
-            [totalTasksInCategory]="totalTasksCountInCategory"
-            [completedTasksInCategory]="completedTasksCountInCategory"
-            [uncompletedTasksInCategory]="uncompletedTasksCountInCategory"
-            [showStat]="showStat"
-          >
-          </app-stat>
+<!--          <app-stat-->
+<!--            [totalTasksInCategory]="totalTasksCountInCategory"-->
+<!--            [completedTasksInCategory]="completedTasksCountInCategory"-->
+<!--            [uncompletedTasksInCategory]="uncompletedTasksCountInCategory"-->
+<!--            [showStat]="showStat"-->
+<!--          >-->
+<!--          </app-stat>-->
 
           <div class="row">
             <div class="col-12">
 
-              <app-tasks
-                [tasks]="tasks"
-                [priorities]="priorities"
+<!--              <app-tasks-->
+<!--                [tasks]="tasks"-->
+<!--                [priorities]="priorities"-->
 
-                [selectedCategory]="selectedCategory"
+<!--                [selectedCategory]="selectedCategory"-->
 
-                (updateTask)="onUpdateTask($event)"
-                (deleteTask)="onDeleteTask($event)"
-                (addTask)="onAddTask($event)"
-                (selectCategory)="onSelectCategory($event)"
+<!--                (updateTask)="onUpdateTask($event)"-->
+<!--                (deleteTask)="onDeleteTask($event)"-->
+<!--                (addTask)="onAddTask($event)"-->
+<!--                (selectCategory)="onSelectCategory($event)"-->
 
-                (filterByTitle)="onSearchTasks($event)"
-                (filterByStatus)="onFilterTasksByStatus($event)"
-                (filterByPriority)="onFilterTasksByPriority($event)"
-              >
-              </app-tasks>
+<!--                (filterByTitle)="onSearchTasks($event)"-->
+<!--                (filterByStatus)="onFilterTasksByStatus($event)"-->
+<!--                (filterByPriority)="onFilterTasksByPriority($event)"-->
+<!--              >-->
+<!--              </app-tasks>-->
 
             </div>
           </div>
