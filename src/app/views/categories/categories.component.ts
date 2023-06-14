@@ -12,8 +12,7 @@ import {DeviceDetectorService} from "ngx-device-detector";
 })
 export class CategoriesComponent implements OnInit {
 
-  @Input()
-  categories!: Category[];
+  private _categories!: Category[];
 
   @Output()
   selectCategory = new EventEmitter<Category>();
@@ -34,14 +33,9 @@ export class CategoriesComponent implements OnInit {
   selectedCategory!: Category;
 
   @Input()
-  uncompletedTotal!: number;
+  uncompletedCountForCategoryAll!: number;
 
   selectedCategoryMap!: Map<Category, number>;
-
-  @Input('categoryMap')
-  set setCategoryMap(categoryMap: Map<Category, number>) {
-    this.selectedCategoryMap = categoryMap;
-  }
 
   indexMouseMove: number;
   searchCategoryTitle = '';
@@ -55,6 +49,11 @@ export class CategoriesComponent implements OnInit {
 
   ngOnInit(): void {
 
+  }
+
+  @Input('categories')
+  set categories(value: Category[]) {
+    this._categories = value;
   }
 
   showTasksByCategory(category: Category) {
@@ -113,5 +112,9 @@ export class CategoriesComponent implements OnInit {
 
   isTabletOrMobile(): boolean {
     return this.deviceService.isMobile() || this.deviceService.isTablet();
+  }
+
+  get categories(): Category[] {
+    return this._categories;
   }
 }

@@ -5,20 +5,18 @@
                (closed)="onCloseMenu()"
   >
     <div class="sidebar" id="root-categories" data-color="purple">
-<!--      <app-categories-->
-<!--        [categories]="categories"-->
+      <app-categories
+        [categories]="categories"
+        [selectedCategory]="selectedCategory"
+        [uncompletedCountForCategoryAll]="uncompletedCountForCategoryAll"
 
-<!--        [selectedCategory]="selectedCategory"-->
-<!--        [categoryMap]="categoryMap"-->
-<!--        [uncompletedTotal]="uncompletedTotalTasksCount"-->
-
-<!--        (selectCategory)="onSelectCategory($event)"-->
-<!--        (deleteCategory)="onDeleteCategory($event)"-->
-<!--        (addCategory)="onAddCategory($event)"-->
-<!--        (updateCategory)="onUpdateCategory($event)"-->
-<!--        (searchCategory)="onSearchCategory($event)"-->
-<!--      >-->
-<!--      </app-categories>-->
+        (selectCategory)="onSelectCategory($event)"
+        (deleteCategory)="onDeleteCategory($event)"
+        (addCategory)="onAddCategory($event)"
+        (updateCategory)="onUpdateCategory($event)"
+        (searchCategory)="onSearchCategory($event)"
+      >
+      </app-categories>
     </div>
   </mat-sidenav>
 
