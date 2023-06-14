@@ -6,6 +6,7 @@ import {IntroService} from "./service/intro.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {MatDrawerMode} from "@angular/material/sidenav";
 import {CategoryService} from "./data/dao/impl/category.service";
+import {CategorySearchValues} from "./data/dao/search/SearchObjects";
 
 @Component({
   selector: 'app-root',
@@ -17,8 +18,8 @@ export class AppComponent implements OnInit {
 
   categories!: Category[];
   selectedCategory!: Category;
-  searchCategoryTitle!: string;
   uncompletedCountForCategoryAll!: number;
+  categorySearchValues!: CategorySearchValues;
 
   showStat!: boolean;
 
@@ -145,15 +146,10 @@ export class AppComponent implements OnInit {
     // this.dataHandler.addCategory(title).subscribe(() => this.fillAllCategories());
   }
 
-  onSearchCategory(title: string): void {
-    this.searchCategoryTitle = title;
-
-    // this.dataHandler.searchCategories(title).subscribe(
-    //   categories => {
-    //     this.categories = categories
-    //     this.fillAllCategories();
-    //   }
-    // );
+  onSearchCategory(searchValues: CategorySearchValues) {
+    this.categoryService.search(searchValues).subscribe(result => {
+      this.categories = result;
+    });
   }
 
   private updateCategories() {

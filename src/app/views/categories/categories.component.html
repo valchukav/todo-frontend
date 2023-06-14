@@ -17,20 +17,28 @@
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Поиск категорий"
                  maxlength="256"
-                 #inputSearchCategory
 
-                 (keydown.escape)="searchCategoryTitle=''; search()"
-                 (keyup)="search()"
+                 (keydown.escape)="clearAndSearch()"
+                 (ngModelChange)="this.checkFilterChanged()"
 
-                 [(ngModel)]="searchCategoryTitle"
+                 [(ngModel)]="filterTitle"
           >
 
           <button mat-icon-button matSuffix aria-label="Clear"
+                  *ngIf="filterTitle && filterTitle.trim().length > 0"
                   class="search-category-button clear-input gray"
-                  *ngIf="inputSearchCategory.value.trim().length > 0"
-                  (click)="searchCategoryTitle=''; search()"
+                  (click)="clearAndSearch()"
           >
             <mat-icon>clear</mat-icon>
+          </button>
+
+          <button mat-icon-button matSuffix
+                  class="clear-input gray"
+                  *ngIf="filterTitle && filterTitle.trim().length > 0"
+                  (click)="search()"
+                  [ngClass]="{'blink-button': filterChanged}"
+          >
+            <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
       </div>

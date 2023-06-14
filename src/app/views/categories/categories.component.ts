@@ -4,6 +4,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {EditCategoryDialogComponent} from "../../dialog/edit-category-dialog/edit-category-dialog.component";
 import {OperType} from "../../dialog/oper-type";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {CategorySearchValues} from "../../data/dao/search/SearchObjects";
 
 @Component({
   selector: 'app-categories',
@@ -13,6 +14,8 @@ import {DeviceDetectorService} from "ngx-device-detector";
 export class CategoriesComponent implements OnInit {
 
   private _categories!: Category[];
+
+  private _categorySearchValues!: CategorySearchValues;
 
   @Output()
   selectCategory = new EventEmitter<Category>();
@@ -27,7 +30,7 @@ export class CategoriesComponent implements OnInit {
   addCategory = new EventEmitter<string>();
 
   @Output()
-  searchCategory = new EventEmitter<string>();
+  searchCategory = new EventEmitter<CategorySearchValues>();
 
   @Input()
   selectedCategory!: Category;
@@ -35,25 +38,29 @@ export class CategoriesComponent implements OnInit {
   @Input()
   uncompletedCountForCategoryAll!: number;
 
-  selectedCategoryMap!: Map<Category, number>;
+  filterTitle!: string;
+  filterChanged = false;
 
   indexMouseMove: number;
-  searchCategoryTitle = '';
+
+  @Input('categories')
+  set categories(value: Category[]) {
+    this._categories = value;
+  }
+
+  @Input('categorySearchValues')
+  set categorySearchValues(value: CategorySearchValues) {
+    this._categorySearchValues = value;
+  }
 
   constructor(
     private dialog: MatDialog,
     private deviceService: DeviceDetectorService
   ) {
-
   }
 
   ngOnInit(): void {
-
-  }
-
-  @Input('categories')
-  set categories(value: Category[]) {
-    this._categories = value;
+    this._categorySearchValues = new CategorySearchValues(null);
   }
 
   showTasksByCategory(category: Category) {
@@ -103,11 +110,24 @@ export class CategoriesComponent implements OnInit {
   }
 
   search(): void {
-    if (this.searchCategoryTitle == null) {
+    this.filterChanged = false;
+
+    if (!this._categorySearchValues) {
       return;
     }
 
-    this.searchCategory.emit(this.searchCategoryTitle);
+    this._categorySearchValues.title = this.filterTitle;
+    this.searchCategory.emit(this._categorySearchValues);
+  }
+
+  clearAndSearch(): void {
+    this.filterTitle = null;
+    this.search();
+  }
+
+  checkFilterChanged(): boolean {
+    this.filterChanged = this.filterTitle !== this._categorySearchValues.title;
+    return this.filterChanged;
   }
 
   isTabletOrMobile(): boolean {
@@ -116,5 +136,9 @@ export class CategoriesComponent implements OnInit {
 
   get categories(): Category[] {
     return this._categories;
+  }
+
+  get categorySearchValues(): CategorySearchValues {
+    return this._categorySearchValues;
   }
 }
