@@ -14,9 +14,7 @@ export const CATEGORY_URL_TOKEN = new InjectionToken<string>('url');
 })
 export class CategoryService extends CommonService<Category> implements CategoryDAO {
 
-  url = 'http://localhost:8080/category';
-
-  constructor(@Inject(CATEGORY_URL_TOKEN) private baseUrl,
+  constructor(@Inject(CATEGORY_URL_TOKEN) private baseUrl: string,
               private http: HttpClient) {
     super(baseUrl, http)
   }

@@ -1,22 +1,20 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Task} from "../../../model/Task";
 import {Observable} from "rxjs";
-import {CommonDAO} from "../interface/CommonDAO";
 
 @Injectable({
   providedIn: 'root'
 })
-export class CommonService<T> implements CommonDAO<T> {
+export abstract class CommonService<T> {
 
-  private readonly url: string;
+  protected readonly url: string;
 
-  constructor(url: string,
+  protected constructor(url: string,
               private httpClient: HttpClient) {
     this.url = url;
   }
 
-  add(t: T): Observable<Task> {
+  add(t: T): Observable<T> {
     return this.httpClient.post<T>(this.url + '/add', t);
   }
 

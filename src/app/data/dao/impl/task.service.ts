@@ -13,7 +13,7 @@ export const TASK_URL_TOKEN = new InjectionToken<string>('url');
 })
 export class TaskService extends CommonService<Task> implements TaskDAO {
 
-  constructor(@Inject(TASK_URL_TOKEN) private baseUrl,
+  constructor(@Inject(TASK_URL_TOKEN) private baseUrl: string,
               private http: HttpClient) {
     super(baseUrl, http)
   }

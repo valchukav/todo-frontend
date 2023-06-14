@@ -11,7 +11,7 @@ export const STAT_URL_TOKEN = new InjectionToken<string>('url');
 })
 export class StatService implements StatDAO {
 
-  constructor(@Inject(STAT_URL_TOKEN) private baseUrl,
+  constructor(@Inject(STAT_URL_TOKEN) private baseUrl: string,
               private http: HttpClient) {
   }
 

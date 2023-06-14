@@ -13,7 +13,7 @@ export const PRIORITY_URL_TOKEN = new InjectionToken<string>('url');
 })
 export class PriorityService extends CommonService<Priority> implements PriorityDAO {
 
-  constructor(@Inject(PRIORITY_URL_TOKEN) private baseUrl,
+  constructor(@Inject(PRIORITY_URL_TOKEN) private baseUrl: string,
               private http: HttpClient) {
     super(baseUrl, http)
   }

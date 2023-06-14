@@ -2,11 +2,11 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {Task} from "../../model/Task";
 import {Category} from "../../model/Category";
-import {DataHandlerService} from "../../service/data-handler.service";
 import {Priority} from "../../model/Priority";
 import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component";
 import {OperType} from "../oper-type";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {CompleteType} from "../../model/CompleteType";
 
 @Component({
   selector: 'app-edit-task-dialog',
@@ -27,10 +27,12 @@ export class EditTaskDialogComponent implements OnInit {
   tmpPriority!: Priority;
   tmpDate: Date;
 
+  completed = CompleteType.COMPLETED;
+  uncompleted = CompleteType.UNCOMPLETED;
+
   constructor(
     private dialogRef: MatDialogRef<EditTaskDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: [Task, string, OperType],
-    private dataHandler: DataHandlerService,
     private dialog: MatDialog,
     private deviceService: DeviceDetectorService
   ) {
@@ -46,8 +48,8 @@ export class EditTaskDialogComponent implements OnInit {
     this.tmpPriority = this.task.priority;
     this.tmpDate = this.task.date;
 
-    this.dataHandler.getAllCategories().subscribe(items => this.categories = items);
-    this.dataHandler.getAllPriorities().subscribe(items => this.priorities = items);
+    // this.dataHandler.getAllCategories().subscribe(items => this.categories = items);
+    // this.dataHandler.getAllPriorities().subscribe(items => this.priorities = items);
   }
 
   onConfirm(): void {

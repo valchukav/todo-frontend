@@ -11,6 +11,7 @@ import {Priority} from "../../model/Priority";
 import {OperType} from "../../dialog/oper-type";
 import {PrioritiesComponent} from "../priorities/priorities.component";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {CompleteType} from "../../model/CompleteType";
 
 @Component({
   selector: 'app-tasks',
@@ -59,6 +60,9 @@ export class TasksComponent implements OnInit {
   isMobile!: boolean;
   isTablet!: boolean;
 
+  completed = CompleteType.COMPLETED;
+  uncompleted = CompleteType.UNCOMPLETED;
+
   constructor(
     private dialog: MatDialog,
     private deviceService: DeviceDetectorService
@@ -86,7 +90,7 @@ export class TasksComponent implements OnInit {
   }
 
   getPriorityColor(task: Task): string {
-    if (task.completed) {
+    if (task.completeType === CompleteType.COMPLETED) {
       return '#F8F9FA'
     }
 
@@ -98,7 +102,7 @@ export class TasksComponent implements OnInit {
   }
 
   getMobilePriorityBgColor(task: Task): string {
-    if (task.priority != null && !task.completed) {
+    if (task.priority != null && task.completeType === CompleteType.UNCOMPLETED) {
       return task.priority.color;
     }
 
@@ -147,13 +151,13 @@ export class TasksComponent implements OnInit {
       }
 
       if (result === 'complete') {
-        task.completed = true;
+        task.completeType = CompleteType.COMPLETED;
         this.updateTask.emit(task);
         return;
       }
 
       if (result === 'activate') {
-        task.completed = false;
+        task.completeType = CompleteType.UNCOMPLETED;
         this.updateTask.emit(task);
         return;
       }
@@ -166,7 +170,11 @@ export class TasksComponent implements OnInit {
   }
 
   onToggleStatus(task: Task): void {
-    task.completed = !task.completed;
+    if (task.completeType === CompleteType.COMPLETED) {
+      task.completeType = CompleteType.UNCOMPLETED;
+    } else {
+      task.completeType = CompleteType.COMPLETED;
+    }
     this.updateTask.emit(task);
   }
 
@@ -211,7 +219,7 @@ export class TasksComponent implements OnInit {
   }
 
   openAddTaskDialog() {
-    const task = new Task(null, '', false, null, this.selectedCategory);
+    const task = new Task(null, '', CompleteType.UNCOMPLETED, null, this.selectedCategory);
 
     const dialogRef = this.dialog.open(EditTaskDialogComponent,
       {data: [task, "Добавление задачи", OperType.ADD]}
