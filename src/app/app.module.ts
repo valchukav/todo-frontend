@@ -38,6 +38,10 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatDividerModule} from "@angular/material/divider";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {HttpClientModule} from "@angular/common/http";
+import {TASK_URL_TOKEN} from "./data/dao/impl/task.service";
+import {CATEGORY_URL_TOKEN} from "./data/dao/impl/category.service";
+import {PRIORITY_URL_TOKEN} from "./data/dao/impl/priority.service";
+import {STAT_URL_TOKEN} from "./data/dao/impl/stat.service";
 
 registerLocaleData(localeRu);
 
@@ -81,7 +85,12 @@ registerLocaleData(localeRu);
     MatDividerModule,
     HttpClientModule
   ],
-  providers: [DeviceDetectorService],
+  providers: [DeviceDetectorService,
+    {provide: TASK_URL_TOKEN, useValue: 'http://localhost:8080/task'},
+    {provide: CATEGORY_URL_TOKEN, useValue: 'http://localhost:8080/category'},
+    {provide: PRIORITY_URL_TOKEN, useValue: 'http://localhost:8080/priority'},
+    {provide: STAT_URL_TOKEN, useValue: 'http://localhost:8080/stat'}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
