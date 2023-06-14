@@ -37,6 +37,7 @@ import {EditPriorityDialogComponent} from './dialog/edit-priority-dialog/edit-pr
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatDividerModule} from "@angular/material/divider";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {HttpClientModule} from "@angular/common/http";
 
 registerLocaleData(localeRu);
 
@@ -77,7 +78,8 @@ registerLocaleData(localeRu);
     MatCheckboxModule,
     ColorPickerModule,
     MatSidenavModule,
-    MatDividerModule
+    MatDividerModule,
+    HttpClientModule
   ],
   providers: [DeviceDetectorService],
   bootstrap: [AppComponent]
