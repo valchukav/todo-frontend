@@ -8,6 +8,7 @@ import {MatDrawerMode} from "@angular/material/sidenav";
 import {CategoryService} from "./data/dao/impl/category.service";
 import {CategorySearchValues, TaskSearchValues} from "./data/dao/search/SearchObjects";
 import {TaskService} from "./data/dao/impl/task.service";
+import {PageEvent} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,7 @@ export class AppComponent implements OnInit {
 
   tasks!: Task[];
   taskSearchValues = new TaskSearchValues();
+  totalTasksFounded!: number;
 
   showStat!: boolean;
 
@@ -164,6 +166,7 @@ export class AppComponent implements OnInit {
     this.taskSearchValues = searchValues;
 
     this.taskService.search(this.taskSearchValues).subscribe(result => {
+      this.totalTasksFounded = result.totalElements;
       this.tasks = result.content;
     })
   }
@@ -216,5 +219,20 @@ export class AppComponent implements OnInit {
     //     this.uncompletedTasksCountInCategory = array[2];
     //     this.uncompletedTotalTasksCount = array[3];
     //   });
+  }
+
+  paging(pageEvent: PageEvent) {
+
+    console.log(pageEvent);
+
+    if (this.taskSearchValues.pageSize !== pageEvent.pageSize) {
+      this.taskSearchValues.pageNumber = 0;
+    } else {
+      this.taskSearchValues.pageNumber = pageEvent.pageIndex;
+    }
+
+    this.taskSearchValues.pageSize = pageEvent.pageSize;
+
+    this.onSearchTasks(this.taskSearchValues);
   }
 }

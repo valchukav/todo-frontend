@@ -25,9 +25,9 @@ export class TaskSearchValues {
   priorityId: number = null;
   categoryId: number = null;
 
-  pageNumber: number = 0;
-  pageSize: number = 20;
+  pageNumber = 0;
+  pageSize = 10;
 
-  sortColumn: string = 'id';
-  sortDirection: string = 'asc';
+  sortColumn: string;
+  sortDirection: string;
 }

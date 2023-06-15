@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Task} from "../../model/Task";
 import {MatTableDataSource} from "@angular/material/table";
-import {MatPaginator} from "@angular/material/paginator";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
 import {EditTaskDialogComponent} from "../../dialog/edit-task-dialog/edit-task-dialog.component";
@@ -12,6 +12,7 @@ import {OperType} from "../../dialog/oper-type";
 import {PrioritiesComponent} from "../priorities/priorities.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CompleteType} from "../../model/CompleteType";
+import {TaskSearchValues} from "../../data/dao/search/SearchObjects";
 
 @Component({
   selector: 'app-tasks',
@@ -23,7 +24,7 @@ export class TasksComponent implements OnInit {
   displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priority', 'category', 'operations', 'select'];
   dataSource!: MatTableDataSource<Task>;
 
-  @ViewChild(MatPaginator, {static: false}) private paginator!: MatPaginator;
+  @ViewChild(MatPaginator, {static: false, read: true}) private paginator!: MatPaginator;
   @ViewChild(MatSort, {static: false}) private sort!: MatSort;
 
   tasks!: Task[];
@@ -50,8 +51,16 @@ export class TasksComponent implements OnInit {
   @Output()
   filterByPriority = new EventEmitter<Priority>();
 
+  @Output()
+  paging = new EventEmitter<PageEvent>();
+
   @Input()
   selectedCategory!: Category;
+
+  @Input()
+  totalTasksFounded!: number;
+
+  private _taskSearchValues!: TaskSearchValues;
 
   searchTaskText!: string;
   selectedStatusFilter!: boolean;
@@ -81,6 +90,11 @@ export class TasksComponent implements OnInit {
   @Input('priorities')
   set setPriorities(value: Priority[]) {
     this.priorities = value;
+  }
+
+  @Input('taskSearchValues')
+  set taskSearchValues(value: TaskSearchValues) {
+    this._taskSearchValues = value;
   }
 
   ngOnInit() {
@@ -230,5 +244,13 @@ export class TasksComponent implements OnInit {
         this.addTask.emit(task);
       }
     });
+  }
+
+  onPageChange(pageEvent: PageEvent) {
+    this.paging.emit(pageEvent);
+  }
+
+  get taskSearchValues(): TaskSearchValues {
+    return this._taskSearchValues;
   }
 }

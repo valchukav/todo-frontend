@@ -123,7 +123,7 @@
           <ng-container matColumnDef="id">
             <th *matHeaderCellDef mat-header-cell></th>
             <td class="col-id" *matCellDef="let index = index;" mat-cell>
-              {{index + 1}}
+              {{index + 1 + taskSearchValues.pageNumber * taskSearchValues.pageSize}}
             </td>
           </ng-container>
 
@@ -205,7 +205,10 @@
           <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
         </mat-table>
 
-        <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+        <mat-paginator [length]="totalTasksFounded" (page)="onPageChange($event)"
+                       [pageIndex]="taskSearchValues.pageNumber"
+                       [pageSize]="taskSearchValues.pageSize"
+                       [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
 
       </div>
 
