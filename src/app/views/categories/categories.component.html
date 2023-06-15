@@ -58,7 +58,7 @@
       <div *ngIf="categories && categories.length === 0"><p class="not-found">Ничего не найдено</p></div>
 
       <li class="nav-item pointer"
-          [class.active]="category === selectedCategory"
+          [class.active]="(category && selectedCategory) && category.id === selectedCategory.id"
 
           *ngFor="let category of categories; let index = index"
 

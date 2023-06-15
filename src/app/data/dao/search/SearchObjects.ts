@@ -30,15 +30,4 @@ export class TaskSearchValues {
 
   sortColumn: string = 'id';
   sortDirection: string = 'asc';
-
-  constructor(title: string, completeType: CompleteType, priorityId: number, categoryId: number, pageNumber: number, pageSize: number, sortColumn: string, sortDirection: string) {
-    this.title = title;
-    this.completeType = completeType;
-    this.priorityId = priorityId;
-    this.categoryId = categoryId;
-    this.pageNumber = pageNumber;
-    this.pageSize = pageSize;
-    this.sortColumn = sortColumn;
-    this.sortDirection = sortDirection;
-  }
 }

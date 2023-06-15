@@ -6,7 +6,8 @@ import {IntroService} from "./service/intro.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {MatDrawerMode} from "@angular/material/sidenav";
 import {CategoryService} from "./data/dao/impl/category.service";
-import {CategorySearchValues} from "./data/dao/search/SearchObjects";
+import {CategorySearchValues, TaskSearchValues} from "./data/dao/search/SearchObjects";
+import {TaskService} from "./data/dao/impl/task.service";
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,10 @@ export class AppComponent implements OnInit {
   categories!: Category[];
   selectedCategory!: Category;
   uncompletedCountForCategoryAll!: number;
-  categorySearchValues!: CategorySearchValues;
+  categorySearchValues = new CategorySearchValues(null);
+
+  tasks!: Task[];
+  taskSearchValues = new TaskSearchValues();
 
   showStat!: boolean;
 
@@ -31,6 +35,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
+    private taskService: TaskService,
     private introService: IntroService,
     private deviceService: DeviceDetectorService
   ) {
@@ -66,7 +71,6 @@ export class AppComponent implements OnInit {
   }
 
   private fillAllCategories(): void {
-    this.categorySearchValues = new CategorySearchValues(null);
     this.categoryService.getAll().subscribe(result => {
       this.categories = result;
     });
@@ -75,7 +79,13 @@ export class AppComponent implements OnInit {
   onSelectCategory(category: Category) {
     this.selectedCategory = category;
 
-    this.updateTasksAndStat();
+    this.taskSearchValues.categoryId = category? category.id : null;
+
+    this.onSearchTasks(this.taskSearchValues);
+
+    if (this.isMobile) {
+      this.onCloseMenu();
+    }
   }
 
   onUpdateTask(task: Task): void {
@@ -150,9 +160,12 @@ export class AppComponent implements OnInit {
     // );
   }
 
-  onSearchTasks(searchText: string) {
-    // this.searchTaskText = searchText;
-    this.updateTasks();
+  onSearchTasks(searchValues: TaskSearchValues) {
+    this.taskSearchValues = searchValues;
+
+    this.taskService.search(this.taskSearchValues).subscribe(result => {
+      this.tasks = result.content;
+    })
   }
 
   onFilterTasksByStatus(status: boolean) {
@@ -179,7 +192,6 @@ export class AppComponent implements OnInit {
 
   private updateTasksAndStat(): void {
     this.updateTasks();
-
     this.updateStat();
   }
 
