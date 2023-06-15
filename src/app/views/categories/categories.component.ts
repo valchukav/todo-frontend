@@ -5,6 +5,7 @@ import {EditCategoryDialogComponent} from "../../dialog/edit-category-dialog/edi
 import {OperType} from "../../dialog/oper-type";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CategorySearchValues} from "../../data/dao/search/SearchObjects";
+import {DialogAction} from "../../object/DialogResult";
 
 @Component({
   selector: 'app-categories',
@@ -27,7 +28,7 @@ export class CategoriesComponent implements OnInit {
   updateCategory = new EventEmitter<Category>();
 
   @Output()
-  addCategory = new EventEmitter<string>();
+  addCategory = new EventEmitter<Category>();
 
   @Output()
   searchCategory = new EventEmitter<CategorySearchValues>();
@@ -77,20 +78,20 @@ export class CategoriesComponent implements OnInit {
 
   openEditDialog(category: Category): void {
     const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
-      data: [category.title, 'Редактирование категории', OperType.EDIT],
+      data: [new Category(category.id, category.title), 'Редактирование категории', OperType.EDIT],
       width: '400px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'delete') {
+      if (!(result)) return;
+
+      if (result.action === DialogAction.DELETE) {
         this.deleteCategory.emit(category);
         return;
       }
 
-      if (typeof (result) === 'string') {
-        category.title = result as string;
-
-        this.updateCategory.emit(category);
+      if (result.action === DialogAction.SAVE) {
+        this.updateCategory.emit(result.obj as Category);
         return;
       }
     });
@@ -98,13 +99,15 @@ export class CategoriesComponent implements OnInit {
 
   openAddDialog(): void {
     const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
-      data: ['', 'Добавление категории', OperType.ADD],
+      data: [new Category(null, ''), 'Добавление категории', OperType.ADD],
       width: '400px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.addCategory.emit(result as string);
+      if (!(result)) return;
+
+      if (result.action === DialogAction.SAVE) {
+        this.addCategory.emit(result.obj as Category);
       }
     });
   }

@@ -2,14 +2,14 @@
   <p mat-dialog-title class="dialog-title">{{dialogTitle}}</p>
 
   <mat-form-field>
-    <mat-label>Название (15 символов)</mat-label>
-    <input matInput maxlength="15" #inputTitle
-           [(ngModel)]="tmpTitle"
+    <mat-label>Название (от 3 до 15 символов)</mat-label>
+    <input matInput minlength="3" maxlength="15" #inputTitle
+           [(ngModel)]="category.title"
            (keydown.enter)="onConfirm()">
 
-    <button *ngIf="tmpTitle.trim().length > 0"
+    <button *ngIf="inputTitle.value.trim().length > 0"
             mat-icon-button matSuffix aria-label="Clear"
-            (click)="tmpTitle=''" class="clear-icon clear-input">
+            (click)="inputTitle.value=''" class="clear-icon clear-input">
       <mat-icon>clear</mat-icon>
     </button>
   </mat-form-field>
@@ -19,7 +19,7 @@
 
   <div class="col-12 text-center add-edit-div">
     <button mat-raised-button color="primary" (click)="onConfirm()"
-            [disabled]="inputTitle.value.trim().length == 0">
+            [disabled]="inputTitle.value.trim().length < 3">
       Сохранить
     </button>
 

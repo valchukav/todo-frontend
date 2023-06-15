@@ -66,17 +66,10 @@ export class AppComponent implements OnInit {
   }
 
   private fillAllCategories(): void {
+    this.categorySearchValues = new CategorySearchValues(null);
     this.categoryService.getAll().subscribe(result => {
       this.categories = result;
     });
-
-    // this.categories = this.categories.sort((a, b) => a.title.localeCompare(b.title));
-
-    // this.categories.forEach(cat => {
-    //   this.dataHandler.getUncompletedCountInCategory(cat).subscribe(count => {
-    //     this.categoryMap.set(cat, count);
-    //   })
-    // });
   }
 
   onSelectCategory(category: Category) {
@@ -128,22 +121,21 @@ export class AppComponent implements OnInit {
   }
 
   onDeleteCategory(category: Category) {
-    // this.dataHandler.deleteCategory(category.id).subscribe(cat => {
-    //   this.selectedCategory = null;
-    //   this.categoryMap.delete(cat);
-    //   this.onSearchCategory(this.searchCategoryTitle);
-    //   this.updateTasks();
-    // });
+    this.categoryService.delete(category.id).subscribe(result => {
+      this.onSearchCategory(this.categorySearchValues);
+    })
   }
 
   onUpdateCategory(category: Category) {
-    // this.dataHandler.updateCategory(category).subscribe(() => {
-    //   this.onSearchCategory(this.searchCategoryTitle);
-    // });
+    this.categoryService.update(category).subscribe(result => {
+      this.onSearchCategory(this.categorySearchValues);
+    })
   }
 
-  onAddCategory(title: string): void {
-    // this.dataHandler.addCategory(title).subscribe(() => this.fillAllCategories());
+  onAddCategory(category: Category): void {
+    this.categoryService.add(category).subscribe(result => {
+      this.onSearchCategory(this.categorySearchValues);
+    })
   }
 
   onSearchCategory(searchValues: CategorySearchValues) {
