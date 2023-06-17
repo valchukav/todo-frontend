@@ -26,7 +26,6 @@ export class IntroService {
         prevLabel: '< пред.',
         doneLabel: 'Выход',
         scrollToElement: true,
-        // skipLabel: 'Выход',
         exitOnEsc: true,
         exitOnOverlayClick: false,
         tooltipClass: 'customTooltip'
@@ -43,11 +42,11 @@ export class IntroService {
           element: document.getElementById('stats-and-tasks'),
           intro: 'Список всех задач со статистикой'
         },
-        {
-          element: document.getElementById('add-task-button'),
-          intro: 'Добавление новой задачи',
-          position: "left"
-        },
+        // {
+        //   element: document.getElementById('add-task-button'),
+        //   intro: 'Добавление новой задачи',
+        //   position: "left"
+        // },
         {
           element: document.getElementById('edit-priorities-settings'),
           intro: 'Добавление/удаление/редактирование приоритетов',

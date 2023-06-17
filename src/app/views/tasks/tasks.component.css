@@ -179,3 +179,7 @@ div.card-mobile p {
 .nowidth {
   width: 100% !important;
 }
+
+.mat-mdc-form-field-icon-suffix {
+  width: 20% !important;
+}

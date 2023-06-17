@@ -1,107 +1,176 @@
 <div class="row">
 
-  <!--фильтрация-->
-  <div class="col-lg-3 col-md-12 col-sm-12">
+  <div class="row search-task-row padding-10" *ngIf="isMobile || isTablet">
+    <div class="col-6 text-left align-middle" style="margin-top: 7px">
+      <span class="link" (click)="onToggleSearch()" *ngIf="showSearch">Скрыть поиск</span>
+      <span class="link" (click)="onToggleSearch()" *ngIf="!showSearch">Показать поиск</span>
+    </div>
 
-    <!--фильтр по тексту-->
-    <mat-form-field>
-      <input matInput placeholder="Поиск в текущей категории"
-             #filterInput
-             maxlength="256"
-
-             (keydown.escape)="searchTaskText=''; onFilterByTitle()"
-             (keyup)="onFilterByTitle()"
-
-             [(ngModel)]="searchTaskText"
-      >
-
-      <button mat-icon-button matSuffix aria-label="Clear"
-              class="clear-icon clear-input gray"
-              *ngIf="filterInput.value.trim().length > 0"
-              (click)="searchTaskText=''; onFilterByTitle()"
-      >
-        <mat-icon>clear</mat-icon>
+    <div class="col-6 align-middle text-right">
+      <button class="full-width" mat-raised-button color="primary"
+              (click)="openAddTaskDialog()"
+      >Добавить
       </button>
-    </mat-form-field>
+    </div>
   </div>
 
-  <div class="col-lg-3 col-md-12 col-sm-12">
+  <div class="row search-task-row" *ngIf="showSearch" style="padding-top: 10px; padding-bottom: 0">
+    <!--фильтрация-->
+    <div class="col-lg-2 col-md-12 col-sm-12">
 
-    <!--фильтр по статусу-->
-    <mat-form-field>
-      <mat-select #statusFilter
-                  placeholder="Фильтр по статусу"
-                  (valueChange)="onFilterByStatus($event)"
-                  [value]="selectedStatusFilter"
-      >
-        <mat-option [value]="null">Все статусы</mat-option>
-        <mat-option [value]="true">Завершенные задачи</mat-option>
-        <mat-option [value]="false">Незавершенные задачи</mat-option>
-      </mat-select>
-
-      <button mat-icon-button matSuffix aria-label="Clear"
-              class="clear-icon clear-input gray"
-              *ngIf="selectedStatusFilter != null"
-              (click)="$event.stopPropagation(); onFilterByStatus(null)"
-      >
-        <mat-icon>clear</mat-icon>
-      </button>
-    </mat-form-field>
-  </div>
-
-  <div class="col-lg-3 col-md-12 col-sm-12">
-
-    <!--фильтр по приоритету-->
-    <mat-form-field>
-      <mat-select #priorityFilter
-                  placeholder="Фильтр по приоритету"
-                  (valueChange)="onFilterByPriority($event)"
-                  [value]="selectedPriorityFilter"
-      >
-        <mat-option [value]="null">Все приоритеты</mat-option>
-        <mat-option *ngFor="let priority of priorities" [value]="priority">{{priority.title}}</mat-option>
-      </mat-select>
-
-      <button mat-icon-button matSuffix aria-label="Clear"
-              class="clear-icon clear-input gray"
-              *ngIf="selectedPriorityFilter != null"
-              (click)="$event.stopPropagation(); onFilterByPriority(null)"
-      >
-        <mat-icon>clear</mat-icon>
-      </button>
-    </mat-form-field>
-  </div>
-
-  <div class="col-lg-3 col-md-12 col-sm-12" style="margin-top: 20px">
-    <div class="row">
-
-      <!--сбросить фильтры-->
-      <div class="text-left col-6">
-        <button matSuffix mat-button aria-label="clear"
-                *ngIf="selectedStatusFilter != null
-                || selectedPriorityFilter != null
-                || (searchTaskText != null && searchTaskText.trim() != '')"
-                (click)="$event.stopPropagation();
-                onFilterByStatus(null);
-                onFilterByPriority(null);
-                searchTaskText='';
-                onFilterByTitle()"
+      <!--фильтр по тексту-->
+      <mat-form-field>
+        <input matInput placeholder="Название"
+               maxlength="16"
+               [(ngModel)]="filterTitle"
+               (ngModelChange)="this.checkFilterChanged()"
+               (keydown.escape)="$event.stopPropagation(); filterTitle=''; checkFilterChanged()"
         >
-          Сбросить
-        </button>
-      </div>
 
-      <div class="text-right col-6">
-        <button id="add-task-button" mat-raised-button color="primary"
-                (click)="openAddTaskDialog()"
-        >Добавить
+        <button *ngIf="filterTitle && filterTitle.trim().length > 0"
+                mat-icon-button matSuffix aria-label="Clear"
+                class="clear-icon clear-input gray"
+                (click)="$event.stopPropagation(); filterTitle=''; checkFilterChanged()"
+        >
+          <mat-icon>clear</mat-icon>
         </button>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-2 col-md-12 col-sm-12">
+
+      <!--фильтр по статусу-->
+      <mat-form-field>
+        <mat-select placeholder="Фильтр по статусу"
+                    [(ngModel)]="filterCompleted"
+                    (selectionChange)="checkFilterChanged()"
+        >
+          <mat-option [value]="null">Все статусы</mat-option>
+          <mat-option [value]="completed">Завершенные задачи</mat-option>
+          <mat-option [value]="uncompleted">Незавершенные задачи</mat-option>
+        </mat-select>
+
+        <button mat-icon-button matSuffix aria-label="Clear"
+                class="clear-icon clear-input gray"
+                *ngIf="filterCompleted != null"
+                (click)="$event.stopPropagation(); filterCompleted = null; checkFilterChanged()"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-2 col-md-12 col-sm-12">
+
+      <!--фильтр по приоритету-->
+      <mat-form-field>
+        <mat-select placeholder="Фильтр по приоритету"
+                    [(ngModel)]="filterPriorityId"
+                    (selectionChange)="checkFilterChanged()"
+        >
+          <mat-option [value]="null">Все приоритеты</mat-option>
+          <mat-option *ngFor="let priority of priorities" [value]="priority.id">{{priority.title}}</mat-option>
+        </mat-select>
+
+        <button mat-icon-button matSuffix aria-label="Clear"
+                class="clear-icon clear-input gray"
+                *ngIf="filterPriorityId != null"
+                (click)="$event.stopPropagation(); filterPriorityId = null; checkFilterChanged()"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-2 col-md-12 col-sm-12">
+
+      <!--поле для сортировки-->
+      <mat-form-field>
+        <mat-select placeholder="Сортировка"
+                    [(ngModel)]="filterSortColumn"
+                    (selectionChange)="checkFilterChanged()"
+        >
+          <mat-option value="title">Название</mat-option>
+          <mat-option value="date">Срок</mat-option>
+          <mat-option value="priority">Приоритет</mat-option>
+          <mat-option value="category">Категория</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!--направление сортировки -->
+    <div class="col-lg-2 col-md-12 col-sm-12" [ngClass]="{'sort': !isMobile}">
+      <mat-form-field>
+        <mat-select placeholder="Направление сортировки"
+                    [(ngModel)]="filterSortDirection"
+                    (selectionChange)="checkFilterChanged()"
+        >
+          <mat-option value="asc">По возрастанию</mat-option>
+          <mat-option value="desc">По убыванию</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-lg-2 col-md-12 col-sm-12" style="margin-top: 10px">
+      <div class="row">
+
+        <div class="text-center col-6">
+          <button [ngClass]="{'search-button': true, 'padding-10': isMobile, 'blink-button': changed}"
+                  mat-raised-button color="accent"
+                  (click)="initSearch()"
+          >
+            Поиск
+          </button>
+        </div>
+
+        <!--сбросить фильтры-->
+        <div class="text-center col-6">
+          <button matSuffix mat-button aria-label="Clear"
+                  [ngClass]="{'padding-10': isMobile}"
+                  (click)="$event.stopPropagation(); clearSearchValues(); checkFilterChanged()"
+          >
+            Сбросить
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Показать поиск/добавить задачу -->
+  <div *ngIf="!isMobile && !isTablet" class="row search-task-row" style="padding-top: 10px; padding-bottom: 0">
+
+    <div class="col-md-10 col-sm-12 text-left align-middle align-self-center">
+      <span class="link" (click)="onToggleSearch()" *ngIf="showSearch">Скрыть поиск</span>
+      <span class="link" (click)="onToggleSearch()" *ngIf="!showSearch">Показать поиск</span>
+    </div>
+
+    <div *ngIf="showSearch" class="col-md-1 col-sm-12 align-middle text-center" style="margin-top: 7px">
+      <span class="founded gray">Найдено: {{totalTasksFounded}}</span>
+    </div>
+
+    <div class="col-sm-12 align-middle text-right" [ngClass]="{'col-md-1': showSearch, 'col-md-2': !showSearch}">
+      <button class="full-width" mat-raised-button color="primary"
+              (click)="openAddTaskDialog()"
+      >Добавить
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Показать количество найденных для мобильного экрана-->
+  <div *ngIf="(isMobile || isTablet) && showSearch" class="row search-task-row" style="padding-top: 10px; padding-bottom: 0">
+
+    <div class="col-md-12 col-sm-12 align-middle align-self-right" style="margin-top: 5px"
+         [ngClass]="{'text-center': isMobile, 'text-right': !isMobile}">
+      <span class="founded gray">Найдено: {{totalTasksFounded}}</span>
+    </div>
+
+  </div>
+
+  <div style="padding-top: 10px"></div>
+
   <!--основная таблица-->
-  <div class="col-md-12 task-lis">
+  <div class="col-md-12 task-list" style="padding-top: 10px; padding-bottom: 0">
 
     <!--для широкого экрана-->
     <div class="card" *ngIf="!isMobile && !isTablet">

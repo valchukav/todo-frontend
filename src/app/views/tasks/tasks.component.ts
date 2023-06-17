@@ -43,16 +43,13 @@ export class TasksComponent implements OnInit {
   selectCategory = new EventEmitter<Category>();
 
   @Output()
-  filterByTitle = new EventEmitter<string>();
-
-  @Output()
-  filterByStatus = new EventEmitter<boolean>();
-
-  @Output()
-  filterByPriority = new EventEmitter<Priority>();
-
-  @Output()
   paging = new EventEmitter<PageEvent>();
+
+  @Output()
+  toggleSearch = new EventEmitter<boolean>();
+
+  @Output()
+  searchAction = new EventEmitter<TaskSearchValues>();
 
   @Input()
   selectedCategory!: Category;
@@ -60,17 +57,27 @@ export class TasksComponent implements OnInit {
   @Input()
   totalTasksFounded!: number;
 
+  @Input()
+  showSearch: boolean;
+
   private _taskSearchValues!: TaskSearchValues;
 
-  searchTaskText!: string;
-  selectedStatusFilter!: boolean;
-  selectedPriorityFilter!: Priority;
+  readonly defaultSortColumn = 'title';
+  readonly defaultSortDirection = 'asc';
+
+  filterTitle!: string;
+  filterCompleted!: CompleteType;
+  filterPriorityId!: number;
+  filterSortColumn = this.defaultSortColumn;
+  filterSortDirection = this.defaultSortDirection;
+
+  changed = false;
 
   isMobile!: boolean;
   isTablet!: boolean;
 
-  completed = CompleteType.COMPLETED;
-  uncompleted = CompleteType.UNCOMPLETED;
+  readonly completed = CompleteType.COMPLETED;
+  readonly uncompleted = CompleteType.UNCOMPLETED;
 
   constructor(
     private dialog: MatDialog,
@@ -85,6 +92,7 @@ export class TasksComponent implements OnInit {
   set setTasks(tasks: Task[]) {
     this.tasks = tasks;
     this.fillTable();
+    this.initSearchValues();
   }
 
   @Input('priorities')
@@ -214,24 +222,6 @@ export class TasksComponent implements OnInit {
     this.selectCategory.emit(category);
   }
 
-  onFilterByTitle(): void {
-    this.filterByTitle.emit(this.searchTaskText);
-  }
-
-  onFilterByStatus(param: boolean): void {
-    if (param != this.selectedStatusFilter) {
-      this.selectedStatusFilter = param;
-      this.filterByStatus.emit(this.selectedStatusFilter);
-    }
-  }
-
-  onFilterByPriority(priority: Priority): void {
-    if (priority != this.selectedPriorityFilter) {
-      this.selectedPriorityFilter = priority;
-      this.filterByPriority.emit(this.selectedPriorityFilter);
-    }
-  }
-
   openAddTaskDialog() {
     const task = new Task(null, '', CompleteType.UNCOMPLETED, null, this.selectedCategory);
 
@@ -252,5 +242,77 @@ export class TasksComponent implements OnInit {
 
   get taskSearchValues(): TaskSearchValues {
     return this._taskSearchValues;
+  }
+
+  onToggleSearch() {
+    this.toggleSearch.emit(!this.showSearch);
+  }
+
+  checkFilterChanged() {
+    this.changed = false;
+
+    if (this.taskSearchValues.title !== this.filterTitle) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.completeType !== this.filterCompleted) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.priorityId !== this.filterPriorityId) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.sortColumn !== this.filterSortColumn) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.sortDirection !== this.filterSortDirection) {
+      this.changed = true;
+    }
+
+    return this.changed;
+  }
+
+  changeSortDirection() {
+    if (this.filterSortDirection === 'asc') {
+      this.filterSortDirection = 'desc';
+    } else {
+      this.filterSortDirection = 'asc';
+    }
+  }
+
+  initSearch() {
+    this.taskSearchValues.title = this.filterTitle;
+    this.taskSearchValues.completeType = this.filterCompleted;
+    this.taskSearchValues.priorityId = this.filterPriorityId;
+    this.taskSearchValues.sortColumn = this.filterSortColumn;
+    this.taskSearchValues.sortDirection = this.filterSortDirection;
+
+    this.searchAction.emit(this.taskSearchValues);
+
+    this.changed = false;
+  }
+
+  clearSearchValues() {
+    this.filterTitle = '';
+    this.filterCompleted = null;
+    this.filterPriorityId = null;
+    this.filterSortColumn = this.defaultSortColumn;
+    this.filterSortDirection = this.defaultSortDirection;
+
+    this.changed = false;
+
+    this.initSearch();
+  }
+
+  private initSearchValues() {
+    if (!this.taskSearchValues) return;
+
+    this.filterTitle = this.taskSearchValues.title;
+    this.filterCompleted = this.taskSearchValues.completeType;
+    this.filterPriorityId = this.taskSearchValues.priorityId;
+    this.filterSortColumn = this.taskSearchValues.sortColumn;
+    this.filterSortDirection = this.taskSearchValues.sortDirection;
   }
 }

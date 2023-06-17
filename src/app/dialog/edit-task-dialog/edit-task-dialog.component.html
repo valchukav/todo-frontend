@@ -67,7 +67,7 @@
   >
     <div *ngIf="canDelete()">
       <button mat-button style="color: forestgreen"
-              *ngIf="task.completeType === completed"
+              *ngIf="task.completeType === uncompleted"
               (click)="complete()">
         Завершить
       </button>

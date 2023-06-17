@@ -27,8 +27,8 @@ export class EditTaskDialogComponent implements OnInit {
   tmpPriority!: Priority;
   tmpDate: Date;
 
-  completed = CompleteType.COMPLETED;
-  uncompleted = CompleteType.UNCOMPLETED;
+  readonly completed = CompleteType.COMPLETED;
+  readonly uncompleted = CompleteType.UNCOMPLETED;
 
   constructor(
     private dialogRef: MatDialogRef<EditTaskDialogComponent>,
@@ -47,9 +47,6 @@ export class EditTaskDialogComponent implements OnInit {
     this.tmpCategory = this.task.category;
     this.tmpPriority = this.task.priority;
     this.tmpDate = this.task.date;
-
-    // this.dataHandler.getAllCategories().subscribe(items => this.categories = items);
-    // this.dataHandler.getAllPriorities().subscribe(items => this.priorities = items);
   }
 
   onConfirm(): void {

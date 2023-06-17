@@ -9,6 +9,9 @@ import {CategoryService} from "./data/dao/impl/category.service";
 import {CategorySearchValues, TaskSearchValues} from "./data/dao/search/SearchObjects";
 import {TaskService} from "./data/dao/impl/task.service";
 import {PageEvent} from "@angular/material/paginator";
+import {PriorityService} from "./data/dao/impl/priority.service";
+import {MatDialog} from "@angular/material/dialog";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -27,7 +30,10 @@ export class AppComponent implements OnInit {
   taskSearchValues = new TaskSearchValues();
   totalTasksFounded!: number;
 
+  priorities!: Priority[];
+
   showStat!: boolean;
+  showSearch = true;
 
   showSidebar!: boolean;
   sidebarMode: MatDrawerMode;
@@ -38,6 +44,8 @@ export class AppComponent implements OnInit {
   constructor(
     private categoryService: CategoryService,
     private taskService: TaskService,
+    private priorityService: PriorityService,
+    private dialog: MatDialog,
     private introService: IntroService,
     private deviceService: DeviceDetectorService
   ) {
@@ -48,12 +56,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.dataHandler.getAllCategories().subscribe((categories: Category[]) => this.categories = categories);
-    // this.dataHandler.getAllPriorities().subscribe((priorities: Priority[]) => this.priorities = priorities);
+    this.fillAllCategories().subscribe(result => {
+      this.categories = result;
+      this.onSelectCategory(this.selectedCategory);
+    });
 
-    this.fillAllCategories();
-
-    this.onSelectCategory(null);
+    this.fillAllPriorities();
 
     if (!this.isMobile && !this.isTablet) {
       this.introService.startIntroJS(true);
@@ -72,10 +80,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private fillAllCategories(): void {
-    this.categoryService.getAll().subscribe(result => {
-      this.categories = result;
-    });
+  private fillAllCategories(): Observable<Category[]> {
+    return this.categoryService.getAll();
   }
 
   onSelectCategory(category: Category) {
@@ -91,45 +97,15 @@ export class AppComponent implements OnInit {
   }
 
   onUpdateTask(task: Task): void {
-    // this.dataHandler.updateTask(task).subscribe(() => {
-    //     this.fillAllCategories();
-    //     this.updateTasksAndStat();
-    //   }
-    // );
+
   }
 
   onDeleteTask(task: Task): void {
-    // this.dataHandler.deleteTask(task).pipe(
-    //   concatMap(task => {
-    //     return this.dataHandler.getUncompletedCountInCategory(task.category).pipe(map(count => {
-    //       return ({t: task, count});
-    //     }))
-    //   })).subscribe(result => {
-    //   const t = result.t as Task;
-    //
-    //   if (t.category) {
-    //     this.categoryMap.set(t.category, result.count);
-    //   }
-    //
-    //   this.updateTasksAndStat();
-    // });
+
   }
 
   onAddTask(task: Task): void {
-    // this.dataHandler.addTask(task).pipe(
-    //   concatMap(task => {
-    //     return this.dataHandler.getUncompletedCountInCategory(task.category).pipe(map(count => {
-    //       return ({t: task, count});
-    //     }))
-    //   })).subscribe(result => {
-    //   const t = result.t as Task;
-    //
-    //   if (t.category) {
-    //     this.categoryMap.set(t.category, result.count);
-    //   }
-    //
-    //   this.updateTasksAndStat();
-    // });
+
   }
 
   onDeleteCategory(category: Category) {
@@ -156,16 +132,17 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private updateCategories() {
-    // this.categories.forEach(
-    //   () => this.dataHandler.getAllCategories().subscribe(categories => this.categories = categories)
-    // );
-  }
-
   onSearchTasks(searchValues: TaskSearchValues) {
     this.taskSearchValues = searchValues;
 
+    // this.cookiesUtils.setCookie(this.cookieTaskSearchValues, JSON.stringify(this.taskSearchValues));
+
     this.taskService.search(this.taskSearchValues).subscribe(result => {
+      if (result.totalPages > 0 && this.taskSearchValues.pageNumber >= result.totalPages) {
+        this.taskSearchValues.pageNumber = 0;
+        this.onSearchTasks(this.taskSearchValues);
+      }
+
       this.totalTasksFounded = result.totalElements;
       this.tasks = result.content;
     })
@@ -223,8 +200,6 @@ export class AppComponent implements OnInit {
 
   paging(pageEvent: PageEvent) {
 
-    console.log(pageEvent);
-
     if (this.taskSearchValues.pageSize !== pageEvent.pageSize) {
       this.taskSearchValues.pageNumber = 0;
     } else {
@@ -234,5 +209,15 @@ export class AppComponent implements OnInit {
     this.taskSearchValues.pageSize = pageEvent.pageSize;
 
     this.onSearchTasks(this.taskSearchValues);
+  }
+
+  private fillAllPriorities() {
+    this.priorityService.getAll().subscribe(result => {
+      this.priorities = result;
+    })
+  }
+
+  onToggleSearch(showSearch: boolean) {
+    this.showSearch = showSearch;
   }
 }
