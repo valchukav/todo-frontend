@@ -13,6 +13,7 @@ import {PrioritiesComponent} from "../priorities/priorities.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CompleteType} from "../../model/CompleteType";
 import {TaskSearchValues} from "../../data/dao/search/SearchObjects";
+import {DialogAction} from "../../object/DialogResult";
 
 @Component({
   selector: 'app-tasks',
@@ -28,6 +29,7 @@ export class TasksComponent implements OnInit {
   @ViewChild(MatSort, {static: false}) private sort!: MatSort;
 
   tasks!: Task[];
+  categories!: Category[];
   priorities!: Priority[];
 
   @Output()
@@ -95,6 +97,11 @@ export class TasksComponent implements OnInit {
     this.initSearchValues();
   }
 
+  @Input('categories')
+  set setCategories(value: Category[]) {
+    this.categories = value;
+  }
+
   @Input('priorities')
   set setPriorities(value: Priority[]) {
     this.priorities = value;
@@ -107,8 +114,6 @@ export class TasksComponent implements OnInit {
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource();
-
-    this.onSelectCategory(null);
   }
 
   getPriorityColor(task: Task): string {
@@ -162,29 +167,33 @@ export class TasksComponent implements OnInit {
   openEditTaskDialog(task: Task): void {
     const dialogRef = this.dialog.open(
       EditTaskDialogComponent,
-      {data: [task, 'Редактирование задачи', OperType.EDIT], autoFocus: false}
+      {data: [task, 'Редактирование задачи', OperType.EDIT, this.categories, this.priorities], autoFocus: false}
     );
 
     dialogRef.afterClosed().subscribe(result => {
 
-      if (result === 'delete') {
+      if (!result) {
+        return
+      }
+
+      if (result.action === DialogAction.DELETE) {
         this.deleteTask.emit(task);
         return;
       }
 
-      if (result === 'complete') {
+      if (result.action === DialogAction.COMPLETE) {
         task.completeType = CompleteType.COMPLETED;
         this.updateTask.emit(task);
         return;
       }
 
-      if (result === 'activate') {
+      if (result.action === DialogAction.ACTIVATE) {
         task.completeType = CompleteType.UNCOMPLETED;
         this.updateTask.emit(task);
         return;
       }
 
-      if (result as Task) {
+      if (result.action === DialogAction.SAVE) {
         this.updateTask.emit(task);
         return;
       }
@@ -223,14 +232,18 @@ export class TasksComponent implements OnInit {
   }
 
   openAddTaskDialog() {
-    const task = new Task(null, '', CompleteType.UNCOMPLETED, null, this.selectedCategory);
+    const task = new Task(null, '', CompleteType.UNCOMPLETED, null, this.selectedCategory, null);
 
     const dialogRef = this.dialog.open(EditTaskDialogComponent,
-      {data: [task, "Добавление задачи", OperType.ADD]}
+      {data: [task, "Добавление задачи", OperType.ADD, this.categories, this.priorities]}
     );
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (!result) {
+        return
+      }
+
+      if (result.action === DialogAction.SAVE) {
         this.addTask.emit(task);
       }
     });

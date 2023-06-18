@@ -97,15 +97,21 @@ export class AppComponent implements OnInit {
   }
 
   onUpdateTask(task: Task): void {
-
+    this.taskService.update(task).subscribe(result => {
+      this.onSearchTasks(this.taskSearchValues);
+    });
   }
 
   onDeleteTask(task: Task): void {
-
+    this.taskService.delete(task.id).subscribe(result => {
+      this.onSearchTasks(this.taskSearchValues);
+    });
   }
 
   onAddTask(task: Task): void {
-
+    this.taskService.add(task).subscribe(result => {
+      this.onSearchTasks(this.taskSearchValues);
+    });
   }
 
   onDeleteCategory(category: Category) {

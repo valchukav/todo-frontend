@@ -22,6 +22,7 @@
     "@angular/router": "^16.0.0",
     "bootstrap-css-only": "^4.4.1",
     "intro.js": "^7.0.1",
+    "json-ignore": "^0.4.0",
     "ngx-color-picker": "^14.0.0",
     "ngx-device-detector": "^6.0.1",
     "rxjs": "~7.8.0",

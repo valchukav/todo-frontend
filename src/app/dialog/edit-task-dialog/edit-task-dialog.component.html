@@ -3,13 +3,14 @@
 
   <mat-form-field>
     <mat-label>Название (обязательно)</mat-label>
-    <input matInput #inputTitle
-           [(ngModel)]="tmpTitle"
+    <input [disabled]="task.completeType && task.completeType === completed"
+           matInput #inputTitle
+           [(ngModel)]="newTitle"
            (keydown.enter)="onConfirm()">
 
-    <button *ngIf="tmpTitle.trim().length > 0"
+    <button *ngIf="!(task.completeType && task.completeType === completed) && newTitle && newTitle.trim().length > 0"
             mat-icon-button matSuffix aria-label="Clear"
-            (click)="tmpTitle=''" class="clear-input">
+            (click)="newTitle=''" class="clear-input">
       <mat-icon>clear</mat-icon>
     </button>
   </mat-form-field>
@@ -17,38 +18,62 @@
   <mat-form-field>
     <mat-label>Укажите категорию</mat-label>
 
-    <mat-select [(ngModel)]="tmpCategory">
+    <mat-select [(value)]="newCategoryId" [disabled]="task.completeType && task.completeType === completed">
       <mat-option [value]="null">Без категории</mat-option>
-      <mat-option *ngFor="let cat of categories" [value]="cat">{{cat.title}}</mat-option>
+      <mat-option *ngFor="let cat of categories" [value]="cat.id">{{cat.title}}</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Укажите приоритет</mat-label>
 
-    <mat-select [(ngModel)]="tmpPriority">
+    <mat-select [(value)]="newPriorityId" [disabled]="task.completeType && task.completeType === completed">
       <mat-option [value]="null">Без приоритета</mat-option>
-      <mat-option *ngFor="let prior of priorities" [value]="prior">{{prior.title}}</mat-option>
+      <mat-option *ngFor="let prior of priorities" [value]="prior.id">{{prior.title}}</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field>
-    <input matInput placeholder="Укажите срок выполнения" #inputDate
+    <input [disabled]="task.completeType && task.completeType === completed"
+           matInput placeholder="Укажите срок выполнения"
+           #inputDate
            readonly="true"
            [matDatepicker]="picker"
-           [(ngModel)]="tmpDate"
+           [(ngModel)]="newDate"
            (click)="picker.open()">
 
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
 
     <mat-datepicker #picker></mat-datepicker>
 
-    <button *ngIf="inputDate.value.trim().length > 0"
+    <button [disabled]="task.completeType && task.completeType === completed"
+            *ngIf="inputDate.value.trim().length > 0"
             matSuffix mat-icon-button aria-label="Clear"
-            (click)="tmpDate = null" class="clear-input">
+            (click)="newDate = null" class="clear-input">
       <mat-icon>clear</mat-icon>
     </button>
   </mat-form-field>
+
+  <div class="row">
+    <div class="col-12">
+      <span class="ready-date" [ngClass]="{'disabled': task.completeType === completed}"
+            (click)="task.completeType === uncompleted && setToday()">
+        Сегодня
+      </span>
+      <span class="ready-date" [ngClass]="{'disabled': task.completeType === completed}"
+            (click)="task.completeType === uncompleted && addDays(1)">
+        Завтра
+      </span>
+      <span class="ready-date" [ngClass]="{'disabled': task.completeType === completed}"
+            (click)="task.completeType === uncompleted && addDays(2)">
+        Послезавтра
+      </span>
+      <span class="ready-date" [ngClass]="{'disabled': task.completeType === completed}"
+            (click)="task.completeType === uncompleted && addDays(7)">
+        Через неделю
+      </span>
+    </div>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
