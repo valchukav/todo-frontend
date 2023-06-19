@@ -265,4 +265,9 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
+  onSettingsChanged(priorities: Priority[]) {
+    this.priorities = priorities;
+    this.onSearchTasks(this.taskSearchValues);
+  }
 }

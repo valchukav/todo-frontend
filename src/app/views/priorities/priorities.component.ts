@@ -4,6 +4,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {OperType} from "../../dialog/oper-type";
 import {EditPriorityDialogComponent} from "../../dialog/edit-priority-dialog/edit-priority-dialog.component";
 import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog.component";
+import {DialogAction} from "../../object/DialogResult";
 
 @Component({
   selector: 'app-priorities',
@@ -33,18 +34,19 @@ export class PrioritiesComponent implements OnInit {
   }
 
   delete(priority: Priority): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent,
-      {
-        maxWidth: '500px',
-        data: {
-          dialogTitle: 'Подтвердите действие',
-          message: 'Вы действительно хотите удалить приоритет: "' + priority.title + '"?'
-        },
-        autoFocus: false
-      });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: '500px',
+      data: {
+        dialogTitle: 'Подтвердите действие',
+        message: 'Вы действительно хотите удалить приоритет "' + priority.title + '"? В случае удаления задачи с данным приоритетом будут иметь статус "без приоритета".'
+      },
+      autoFocus: false
+    });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (!(result)) return;
+
+      if (result.action === DialogAction.OK) {
         this.deletePriority.emit(priority);
       }
     });
@@ -52,19 +54,22 @@ export class PrioritiesComponent implements OnInit {
 
   onEditPriority(priority: Priority): void {
     const dialogRef = this.dialog.open(EditPriorityDialogComponent, {
-      data: [priority.title, 'Редактирование приоритета', OperType.EDIT],
-      width: '400px'
+      data: [new Priority(priority.id, priority.title, priority.color),
+        'Редактирование приоритета',
+        OperType.EDIT
+      ]
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'delete') {
+      if (!(result)) return;
+
+      if (result.action === DialogAction.DELETE) {
         this.deletePriority.emit(priority);
         return;
       }
 
-      if (typeof (result) === 'string') {
-        priority.title = result as string;
-
+      if (result.action === DialogAction.SAVE) {
+        priority = result.obj as Priority;
         this.updatePriority.emit(priority);
         return;
       }
@@ -73,14 +78,17 @@ export class PrioritiesComponent implements OnInit {
 
   onAddPriority(): void {
     const dialogRef = this.dialog.open(EditPriorityDialogComponent, {
-      data: ['', 'Добавление приоритета', OperType.ADD],
-      width: '400px'
+      data: [new Priority(null, '', PrioritiesComponent.defaultColor),
+        'Добавление приоритета',
+        OperType.ADD
+      ]
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const newPriority = new Priority(null, result as string, PrioritiesComponent.defaultColor);
-        this.addPriority.emit(newPriority);
+      if (!(result)) return;
+
+      if (result.action === DialogAction.SAVE) {
+        this.addPriority.emit(result.obj as Priority);
       }
     });
   }
