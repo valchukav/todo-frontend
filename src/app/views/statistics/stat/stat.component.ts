@@ -40,13 +40,13 @@ export class StatComponent implements OnInit {
 
   getCompletedPercent() {
     if (this.dash) {
-      return this.dash.completedTotal? ((this.dash.completedTotal / this.getTotal()) * 100).toFixed(2) : 0;
+      return this.dash.completedTotal ? ((this.dash.completedTotal / this.getTotal()) * 100).toFixed(2) : 0;
     } else return 0;
   }
 
   getUncompletedPercent() {
     if (this.dash) {
-      return this.dash.uncompletedTotal? ((this.dash.uncompletedTotal / this.getTotal()) * 100).toFixed(2) : 0;
+      return this.dash.uncompletedTotal ? ((this.dash.uncompletedTotal / this.getTotal()) * 100).toFixed(2) : 0;
     } else return 0;
   }
 }

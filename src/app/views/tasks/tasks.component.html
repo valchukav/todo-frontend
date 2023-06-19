@@ -158,7 +158,8 @@
   </div>
 
   <!-- Показать количество найденных для мобильного экрана-->
-  <div *ngIf="(isMobile || isTablet) && showSearch" class="row search-task-row" style="padding-top: 10px; padding-bottom: 0">
+  <div *ngIf="(isMobile || isTablet) && showSearch" class="row search-task-row"
+       style="padding-top: 10px; padding-bottom: 0">
 
     <div class="col-md-12 col-sm-12 align-middle align-self-right" style="margin-top: 5px"
          [ngClass]="{'text-center': isMobile, 'text-right': !isMobile}">

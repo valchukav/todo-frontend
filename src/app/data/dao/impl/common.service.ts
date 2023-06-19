@@ -10,7 +10,7 @@ export abstract class CommonService<T> {
   protected readonly url: string;
 
   protected constructor(url: string,
-              private httpClient: HttpClient) {
+                        private httpClient: HttpClient) {
     this.url = url;
   }
 

@@ -73,7 +73,7 @@ export class EditTaskDialogComponent implements OnInit {
 
     if (!this.newDate) {
       this.task.date = null;
-    } else  {
+    } else {
       this.task.date = this.newDate;
     }
 
