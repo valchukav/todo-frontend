@@ -37,11 +37,12 @@ import {EditPriorityDialogComponent} from './dialog/edit-priority-dialog/edit-pr
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatDividerModule} from "@angular/material/divider";
 import {DeviceDetectorService} from "ngx-device-detector";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {TASK_URL_TOKEN} from "./data/dao/impl/task.service";
 import {CATEGORY_URL_TOKEN} from "./data/dao/impl/category.service";
 import {PRIORITY_URL_TOKEN} from "./data/dao/impl/priority.service";
 import {STAT_URL_TOKEN} from "./data/dao/impl/stat.service";
+import {CustomHttpInterceptor} from "./interceptor/custom-http-interceptor";
 
 registerLocaleData(localeRu);
 
@@ -86,6 +87,7 @@ registerLocaleData(localeRu);
     HttpClientModule
   ],
   providers: [DeviceDetectorService,
+    {provide: HTTP_INTERCEPTORS, useClass: CustomHttpInterceptor, multi: true},
     {provide: TASK_URL_TOKEN, useValue: 'http://localhost:8080/task'},
     {provide: CATEGORY_URL_TOKEN, useValue: 'http://localhost:8080/category'},
     {provide: PRIORITY_URL_TOKEN, useValue: 'http://localhost:8080/priority'},

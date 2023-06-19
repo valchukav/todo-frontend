@@ -16,6 +16,7 @@ import {Stat} from "./model/Stat";
 import {DashboardData} from "./object/DashboardData";
 import {StatService} from "./data/dao/impl/stat.service";
 import {CookieUtils} from "./util/CookieUtils";
+import {SpinnerService} from "./service/spinner.service";
 
 @Component({
   selector: 'app-root',
@@ -50,6 +51,8 @@ export class AppComponent implements OnInit {
 
   cookieUtils = new CookieUtils();
 
+  spinner: SpinnerService;
+
   readonly cookieTaskSearchValues = 'todo:searchValues';
   readonly cookieShowStat = 'todo:showStat';
   readonly cookieShowSearch = 'todo:showSearch';
@@ -61,8 +64,11 @@ export class AppComponent implements OnInit {
     private statService: StatService,
     private dialog: MatDialog,
     private introService: IntroService,
-    private deviceService: DeviceDetectorService
+    private deviceService: DeviceDetectorService,
+    private spinnerService: SpinnerService
   ) {
+    this.spinner = spinnerService;
+
     this.isMobile = this.deviceService.isMobile();
     this.isTablet = this.deviceService.isTablet();
 
