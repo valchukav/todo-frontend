@@ -2,6 +2,14 @@
 
 Frontend part of Todo-app: Angular(TS)/Bootstrap(CSS) adaptive layout
 
+Features:
+- SAP,
+- Adaptive layout for mobile and tablet,
+- Pagination and sorting,
+- Statistics dashboard,
+- Settings are saved in cookies,
+- RxJS is used.
+
 To see backend part visit https://github.com/valchukav/todo
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.
