@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
   priorities!: Priority[];
 
   showStat!: boolean;
-  showSearch = true;
+  showSearch!: boolean;
 
   stat!: Stat;
   dash: DashboardData = new DashboardData();
@@ -59,7 +59,8 @@ export class AppComponent implements OnInit {
     this.isMobile = this.deviceService.isMobile();
     this.isTablet = this.deviceService.isTablet();
 
-    this.showStat = !this.isMobile;
+    this.showStat = (!this.isMobile && !this.isTablet);
+    this.showSearch = (!this.isMobile && !this.isTablet);
   }
 
   ngOnInit(): void {

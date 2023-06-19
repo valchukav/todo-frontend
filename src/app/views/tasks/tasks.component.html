@@ -286,7 +286,7 @@
     </div>
 
     <!--для мобильных устройств-->
-    <div *ngIf="(isMobile || isTablet) && tasks.length > 0">
+    <div *ngIf="(isMobile || isTablet) && tasks && tasks.length > 0">
       <div *ngFor="let task of tasks; let index = index; "
            [ngClass]="{'completed': task.completeType === completed}">
 
@@ -348,10 +348,16 @@
           </div>
         </div>
       </div>
+
+      <mat-paginator class="row search-task-row card" [length]="totalTasksFounded" (page)="onPageChange($event)"
+                     [pageIndex]="taskSearchValues.pageNumber"
+                     [pageSize]="taskSearchValues.pageSize"
+                     [hidePageSize]="true"
+                     showFirstLastButtons></mat-paginator>
     </div>
 
 
-    <div *ngIf="isMobile && tasks.length == 0">
+    <div class="card" *ngIf="(isMobile || isTablet) && tasks && tasks.length == 0">
       <p class="not-found">Ничего не найдено</p>
     </div>
   </div>
