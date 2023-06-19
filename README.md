@@ -1,4 +1,8 @@
-# Todo
+# Todo-frontend
+
+Frontend part of Todo-app: Angular(TS)/Bootstrap(CSS) adaptive layout
+
+To see backend part visit https://github.com/valchukav/todo
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.
 
