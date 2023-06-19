@@ -15,6 +15,7 @@ import {Observable} from "rxjs";
 import {Stat} from "./model/Stat";
 import {DashboardData} from "./object/DashboardData";
 import {StatService} from "./data/dao/impl/stat.service";
+import {CookieUtils} from "./util/CookieUtils";
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,7 @@ export class AppComponent implements OnInit {
   categorySearchValues = new CategorySearchValues(null);
 
   tasks!: Task[];
-  taskSearchValues = new TaskSearchValues();
+  taskSearchValues: TaskSearchValues;
   totalTasksFounded!: number;
 
   priorities!: Priority[];
@@ -47,6 +48,12 @@ export class AppComponent implements OnInit {
   isMobile!: boolean;
   isTablet!: boolean;
 
+  cookieUtils = new CookieUtils();
+
+  readonly cookieTaskSearchValues = 'todo:searchValues';
+  readonly cookieShowStat = 'todo:showStat';
+  readonly cookieShowSearch = 'todo:showSearch';
+
   constructor(
     private categoryService: CategoryService,
     private taskService: TaskService,
@@ -59,21 +66,26 @@ export class AppComponent implements OnInit {
     this.isMobile = this.deviceService.isMobile();
     this.isTablet = this.deviceService.isTablet();
 
-    this.showStat = (!this.isMobile && !this.isTablet);
-    this.showSearch = (!this.isMobile && !this.isTablet);
-  }
-
-  ngOnInit(): void {
     this.statService.getOverallStat().subscribe(result => {
       this.stat = result;
       this.uncompletedCountForCategoryAll = this.stat.uncompletedTotal;
 
       this.fillAllCategories().subscribe(result => {
         this.categories = result;
+
+        if (!this.initSearchCookie()) {
+          this.taskSearchValues = new TaskSearchValues();
+        }
+
+        this.initShowStatCookie();
+        this.initShowSearchCookie();
+
         this.onSelectCategory(this.selectedCategory);
       });
     });
+  }
 
+  ngOnInit(): void {
     this.fillAllPriorities();
 
     if (!this.isMobile && !this.isTablet) {
@@ -189,7 +201,7 @@ export class AppComponent implements OnInit {
   onSearchTasks(searchValues: TaskSearchValues) {
     this.taskSearchValues = searchValues;
 
-    // this.cookiesUtils.setCookie(this.cookieTaskSearchValues, JSON.stringify(this.taskSearchValues));
+    this.cookieUtils.setCookie(this.cookieTaskSearchValues, JSON.stringify(this.taskSearchValues));
 
     this.taskService.search(this.taskSearchValues).subscribe(result => {
       if (result.totalPages > 0 && this.taskSearchValues.pageNumber >= result.totalPages) {
@@ -204,6 +216,7 @@ export class AppComponent implements OnInit {
 
   toggleStat(showStat: boolean) {
     this.showStat = showStat;
+    this.cookieUtils.setCookie(this.cookieShowStat, JSON.stringify(this.showStat));
   }
 
   onCloseMenu() {
@@ -235,6 +248,7 @@ export class AppComponent implements OnInit {
 
   onToggleSearch(showSearch: boolean) {
     this.showSearch = showSearch;
+    this.cookieUtils.setCookie(this.cookieShowSearch, JSON.stringify(this.showSearch));
   }
 
   private updateCategoryCounter(category: Category) {
@@ -270,5 +284,71 @@ export class AppComponent implements OnInit {
   onSettingsChanged(priorities: Priority[]) {
     this.priorities = priorities;
     this.onSearchTasks(this.taskSearchValues);
+  }
+
+  private initSearchCookie(): boolean {
+
+    const cookie = this.cookieUtils.getCookie(this.cookieTaskSearchValues);
+
+    if (!cookie) {
+      return false;
+    }
+
+    const cookieJSON = JSON.parse(cookie);
+
+    this.taskSearchValues = new TaskSearchValues();
+
+    const tmpPageSize = cookieJSON.pageSize;
+    if (tmpPageSize) {
+      this.taskSearchValues.pageSize = Number(tmpPageSize);
+    }
+
+    const tmpCategoryId = cookieJSON.categoryId;
+    if (tmpCategoryId) {
+      this.taskSearchValues.categoryId = Number(tmpCategoryId);
+      this.selectedCategory = this.getCategoryFromArray(tmpCategoryId);
+    }
+
+    const tmpPriorityId = cookieJSON.priorityId;
+    if (tmpPriorityId) {
+      this.taskSearchValues.priorityId = Number(tmpPriorityId);
+    }
+
+    const tmpTitle = cookieJSON.title;
+    if (tmpTitle) {
+      this.taskSearchValues.title = tmpTitle;
+    }
+
+    const tmpSortColumn = cookieJSON.sortColumn;
+    if (tmpSortColumn) {
+      this.taskSearchValues.sortColumn = tmpSortColumn;
+    }
+
+    const tmpSortDirection = cookieJSON.sortDirection;
+    if (tmpSortDirection) {
+      this.taskSearchValues.sortDirection = tmpSortDirection;
+    }
+
+    return true;
+  }
+
+  private initShowStatCookie() {
+    if (!this.isMobile && !this.isTablet) {
+      const val = this.cookieUtils.getCookie(this.cookieShowStat);
+      if (val) {
+        this.showStat = val === 'true';
+      }
+    }
+  }
+
+  private initShowSearchCookie() {
+    const val = this.cookieUtils.getCookie(this.cookieShowSearch);
+    if (val) {
+      this.showSearch = val === 'true';
+    }
+  }
+
+  private getCategoryFromArray(tmpCategoryId: number) {
+    return this.categories.find(cat => cat.id === tmpCategoryId);
   }
 }

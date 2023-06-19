@@ -60,6 +60,10 @@ mat-form-field {
   text-decoration: underline;
 }
 
+.link:hover {
+  text-decoration: none;
+}
+
 .main-panel > .content {
   margin-top: 0 !important;
   padding-top: 0 !important;
