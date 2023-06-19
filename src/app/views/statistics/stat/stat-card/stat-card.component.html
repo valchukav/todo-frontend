@@ -5,9 +5,11 @@
     </div>
     <p class="card-category"></p>
     <h3 class="card-title">
-      {{count1}}
-      <span *ngIf="countTotal">
+      <span [ngClass]="{'green': completed, 'red': !completed}">
+        {{count1 || 0}}
+        <span *ngIf="countTotal">
         из {{countTotal}}
+      </span>
       </span>
     </h3>
   </div>

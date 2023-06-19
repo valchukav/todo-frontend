@@ -10,3 +10,11 @@
 .completed-card {
   border: 3px solid #93d893 !important;
 }
+
+.green {
+  color: green;
+}
+
+.red {
+  color: #dc0000;
+}

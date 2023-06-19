@@ -12,6 +12,9 @@ import {PageEvent} from "@angular/material/paginator";
 import {PriorityService} from "./data/dao/impl/priority.service";
 import {MatDialog} from "@angular/material/dialog";
 import {Observable} from "rxjs";
+import {Stat} from "./model/Stat";
+import {DashboardData} from "./object/DashboardData";
+import {StatService} from "./data/dao/impl/stat.service";
 
 @Component({
   selector: 'app-root',
@@ -35,6 +38,9 @@ export class AppComponent implements OnInit {
   showStat!: boolean;
   showSearch = true;
 
+  stat!: Stat;
+  dash: DashboardData = new DashboardData();
+
   showSidebar!: boolean;
   sidebarMode: MatDrawerMode;
 
@@ -45,6 +51,7 @@ export class AppComponent implements OnInit {
     private categoryService: CategoryService,
     private taskService: TaskService,
     private priorityService: PriorityService,
+    private statService: StatService,
     private dialog: MatDialog,
     private introService: IntroService,
     private deviceService: DeviceDetectorService
@@ -56,9 +63,14 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fillAllCategories().subscribe(result => {
-      this.categories = result;
-      this.onSelectCategory(this.selectedCategory);
+    this.statService.getOverallStat().subscribe(result => {
+      this.stat = result;
+      this.uncompletedCountForCategoryAll = this.stat.uncompletedTotal;
+
+      this.fillAllCategories().subscribe(result => {
+        this.categories = result;
+        this.onSelectCategory(this.selectedCategory);
+      });
     });
 
     this.fillAllPriorities();
@@ -84,10 +96,21 @@ export class AppComponent implements OnInit {
     return this.categoryService.getAll();
   }
 
+  private fillDashData(completedCount: number, uncompletedCount: number) {
+    this.dash.completedTotal = completedCount;
+    this.dash.uncompletedTotal = uncompletedCount;
+  }
+
   onSelectCategory(category: Category) {
     this.selectedCategory = category;
 
-    this.taskSearchValues.categoryId = category? category.id : null;
+    this.taskSearchValues.categoryId = category ? category.id : null;
+
+    if (this.selectedCategory) {
+      this.fillDashData(this.selectedCategory.completedCount, this.selectedCategory.uncompletedCount);
+    } else {
+      this.fillDashData(this.stat.completedTotal, this.stat.uncompletedTotal);
+    }
 
     this.onSearchTasks(this.taskSearchValues);
 
@@ -98,31 +121,55 @@ export class AppComponent implements OnInit {
 
   onUpdateTask(task: Task): void {
     this.taskService.update(task).subscribe(result => {
+      if (task.oldCategory) {
+        this.updateCategoryCounter(task.oldCategory);
+      }
+
+      if (task.category) {
+        this.updateCategoryCounter(task.category);
+      }
+
+      this.updateOverallCounter();
       this.onSearchTasks(this.taskSearchValues);
     });
   }
 
   onDeleteTask(task: Task): void {
     this.taskService.delete(task.id).subscribe(result => {
+      if (task.category) {
+        this.updateCategoryCounter(task.category);
+      }
+
+      this.updateOverallCounter();
       this.onSearchTasks(this.taskSearchValues);
     });
   }
 
   onAddTask(task: Task): void {
     this.taskService.add(task).subscribe(result => {
+
+      if (task.category) {
+        this.updateCategoryCounter(task.category);
+      }
+
+      this.updateOverallCounter();
       this.onSearchTasks(this.taskSearchValues);
     });
   }
 
   onDeleteCategory(category: Category) {
     this.categoryService.delete(category.id).subscribe(result => {
+      this.selectedCategory = null;
+
       this.onSearchCategory(this.categorySearchValues);
+      this.onSelectCategory(this.selectedCategory);
     })
   }
 
   onUpdateCategory(category: Category) {
     this.categoryService.update(category).subscribe(result => {
       this.onSearchCategory(this.categorySearchValues);
+      this.onSearchTasks(this.taskSearchValues);
     })
   }
 
@@ -154,16 +201,6 @@ export class AppComponent implements OnInit {
     })
   }
 
-  onFilterTasksByStatus(status: boolean) {
-    // this.statusFilter = status;
-    this.updateTasks();
-  }
-
-  onFilterTasksByPriority(priority: Priority): void {
-    // this.priorityFilter = priority;
-    this.updateTasks();
-  }
-
   toggleStat(showStat: boolean) {
     this.showStat = showStat;
   }
@@ -174,34 +211,6 @@ export class AppComponent implements OnInit {
 
   toggleMenu() {
     this.showSidebar = !this.showSidebar;
-  }
-
-  private updateTasksAndStat(): void {
-    this.updateTasks();
-    this.updateStat();
-  }
-
-  private updateTasks() {
-    // this.dataHandler.searchTasks(
-    //   this.selectedCategory,
-    //   this.searchTaskText,
-    //   this.statusFilter,
-    //   this.priorityFilter
-    // ).subscribe((tasks: Task[]) => this.tasks = tasks);
-  }
-
-  private updateStat(): void {
-    // zip(
-    //   this.dataHandler.getTotalCountInCategory(this.selectedCategory),
-    //   this.dataHandler.getCompletedCountInCategory(this.selectedCategory),
-    //   this.dataHandler.getUncompletedCountInCategory(this.selectedCategory),
-    //   this.dataHandler.getUncompletedTotalCount())
-    //   .subscribe((array: number[]) => {
-    //     this.totalTasksCountInCategory = array[0];
-    //     this.completedTasksCountInCategory = array[1];
-    //     this.uncompletedTasksCountInCategory = array[2];
-    //     this.uncompletedTotalTasksCount = array[3];
-    //   });
   }
 
   paging(pageEvent: PageEvent) {
@@ -225,5 +234,35 @@ export class AppComponent implements OnInit {
 
   onToggleSearch(showSearch: boolean) {
     this.showSearch = showSearch;
+  }
+
+  private updateCategoryCounter(category: Category) {
+    this.categoryService.get(category.id).subscribe(result => {
+      this.categories[this.getCategoryIndex(category)] = result;
+
+      this.showCategoryDashboard(result);
+    });
+  }
+
+  private getCategoryIndex(category: Category): number {
+    const tmpCategory = this.categories.find(t => t.id === category.id);
+    return this.categories.indexOf(tmpCategory);
+  }
+
+  private showCategoryDashboard(category: Category) {
+    if (this.selectedCategory && this.selectedCategory.id === category.id) {
+      this.fillDashData(category.completedCount, category.uncompletedCount);
+    }
+  }
+
+  private updateOverallCounter() {
+    this.statService.getOverallStat().subscribe(result => {
+      this.stat = result;
+
+      this.uncompletedCountForCategoryAll = this.stat.uncompletedTotal;
+      if (!this.selectedCategory) {
+        this.fillDashData(this.stat.completedTotal, this.stat.uncompletedTotal);
+      }
+    });
   }
 }
